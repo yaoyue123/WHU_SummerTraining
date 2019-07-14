@@ -1,0 +1,70 @@
+v,g h q
+//1,0,2,(1)
+//3,1,1,(1,3)
+//2,2,2,(1,2)
+//4,2,0,(1,3,4) 1
+///4,4,0,(1,2,4) 2
+
+图
+1 2 2
+1 3 1
+3 4 1
+2 4 2
+
+typedef struct edge {
+    int v, w, next; // 结点 v  w:u -> v的距离  下个结点的位置 next
+} e[N];
+
+typedef struct node {
+    int v, g, h; // 结点 v  g:src->v  h:v->des
+    queue q;
+}node;
+typedef struct priority_queue {
+    node data[101010];
+    int l, r, size;
+} priority_queue;
+bool cmp_q(queue* a, queue* b) {
+    int n = min(size(a), size(b));
+    for (int i = 0; i < n; i++) {
+        if (a->data[a->l + i] != b->data[b->l + i]) {
+            return <;
+        }
+    }
+    return size(a) < size(b);
+}
+bool cmp(node a, node b) {
+    if (a.g + a.h != b.g + b.h) {
+        return a.g + a.h < b.g + b.h;
+    }
+    cmp_q(&a.q, &b.q);
+}
+queue q; // 路径
+priority_queue pq;// 
+int h[];//   des -> 所有点的最短距离
+void spfa(int des);// 计算 h 数组
+int Astar(int src, int des, int k) {// src -> des k 短路
+    init_q(&q);
+    init_pq(&q);
+    push_q(&q, src);
+    push_pq(&pq, node{src, 0, h[src], q});
+    int cnt = 0;
+    while (size(&pq)) {
+        node tmp = pop(&pq);
+        if (tmp.v == des) {
+            cnt++;
+            if (cnt == k) {
+                print(&tmp.q);
+                return tmp.g;// + tmp.h
+            }
+            continue;
+        }
+        for (int i = p[tmp.v]; ~i; i = e[i].next) {
+            node to = tmp;
+            to.v = e[i].v;
+            to.g += e[i].w; //to.g:s->u  e[i].w:u->v
+            to.h = h[v];
+            push_q(&to.q, v);
+            push_pq(&pq, to);
+        }
+    }
+}
